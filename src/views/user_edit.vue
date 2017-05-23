@@ -46,6 +46,7 @@
             <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></Input>
         </Form-item>
         <Form-item>
+            <Button type="primary" @click="initData()">初始化数据</Button>
             <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
             <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
         </Form-item>
@@ -57,7 +58,7 @@
         data () {
             return {
                 formValidate: {
-                    name: 'aa',
+                    name: 'sky',
                     mail: '',
                     city: '',
                     gender: '',
@@ -98,9 +99,21 @@
             }
         },
         methods: {
+            initData(){
+                this.$http.get("/src/user.json").then(
+                    function (res) {
+                        // 处理成功的结果
+//                        alert(JSON.stringify(res));
+                        this.formValidate = res.body;
+                    },function (res) {
+                        // 处理失败的结果
+                        alert(JSON.stringify(res));
+                    }
+                );
+
+            },
             handleSubmit (name) {
                 this.$refs[name].validate((valid) => {
-
                     if (valid) {
                         this.$Message.success('提交成功!');
                     } else {

@@ -1,0 +1,10 @@
+{
+  name: 'aa',
+  mail: '',
+  city: '',
+  gender: '',
+  interest: [],
+  date: '',
+  time: '',
+  desc: ''
+}

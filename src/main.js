@@ -6,6 +6,9 @@ import Util from './libs/util';
 import App from './app.vue';
 import 'iview/dist/styles/iview.css';
 
+import VueResource from 'vue-resource';
+Vue.use(VueResource);
+
 Vue.use(VueRouter);
 Vue.use(iView);
 
