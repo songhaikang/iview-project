@@ -113,6 +113,8 @@
 
             },
             handleSubmit (name) {
+                alert(JSON.stringify(this.formValidate));
+
                 this.$refs[name].validate((valid) => {
                     if (valid) {
                         this.$Message.success('提交成功!');
