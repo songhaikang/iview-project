@@ -46,7 +46,7 @@
             <Input v-model="formValidate.desc" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></Input>
         </Form-item>
         <Form-item>
-            <Button type="primary" @click="initData()">初始化数据</Button>
+            <Button type="primary" @click="initFormData()">初始化数据</Button>
             <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
             <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
         </Form-item>
@@ -99,7 +99,7 @@
             }
         },
         methods: {
-            initData(){
+            initFormData(){
                 this.$http.get("/src/user.json").then(
                     function (res) {
                         // 处理成功的结果
