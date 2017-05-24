@@ -1,7 +1,14 @@
 <template>
     <div>
+        <Form ref="queryParam" :model="queryParam" :label-width="80">
+            <Form-item label="姓名" prop="name">
+                <Input v-model="queryParam.name" placeholder="请输入姓名" style="width:200px"></Input>
+            </Form-item>
+            <Form-item>
+                <Button type="primary" @click="queryListData()">查询</Button>
+            </Form-item>
+        </Form>
         <Table border :columns="columns" :data="dataRows"></Table>
-        <Button type="primary" @click="initListData()">初始化数据</Button>
     </div>
 </template>
 
@@ -9,6 +16,10 @@
     export default {
         data () {
             return {
+                queryParam: {
+                    name: 'sky',
+                    desc: ''
+                },
                 columns: [
                     {
                         title: '姓名',
@@ -93,10 +104,14 @@
             }
         },
         methods: {
-            initListData(){
+            queryListData(){
                 var self = this;
 //                this.$http.get("/src/data/user_list.json").then(
-                this.$http.get("/cep-svc/user/query.do").then(
+                this.$http.post(
+                    "/cep-svc/user/query.do",
+                    self.queryParam,
+                    {emulateJSON: true}
+                    ).then(
                     function (res) {
                         // 处理成功的结果
 //                        alert(JSON.stringify(res.bodyText));
