@@ -95,12 +95,13 @@
         methods: {
             initListData(){
                 var self = this;
-                this.$http.get("/src/data/user_list.json").then(
+//                this.$http.get("/src/data/user_list.json").then(
+                this.$http.get("/cep-svc/user/query.do").then(
                     function (res) {
                         // 处理成功的结果
 //                        alert(JSON.stringify(res.bodyText));
                         var users = JSON.parse(res.bodyText);
-                        self.dataRows = users;
+                        self.dataRows = users.data.dataRows;
                     }, function (res) {
                         // 处理失败的结果
                         alert(JSON.stringify(res));

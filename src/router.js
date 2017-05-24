@@ -1,24 +1,24 @@
 const routers = [
     {
-        path: '/',
+        path: '/cep-manage/',
         meta: {
             title: '主页'
         },
         component: (resolve) => require(['./views/index.vue'], resolve)
     },{
-        path: '/home/:username',
+        path: '/cep-manager/home/:username',
         meta: {
             title: '首页'
         },
         component: (resolve) => require(['./views/home.vue'], resolve)
     },{
-        path: '/user_list',
+        path: '/cep-manager/user_list',
         meta: {
             title: '用户信息列表'
         },
         component: (resolve) => require(['./views/user_list.vue'], resolve)
     },{
-        path: '/user_edit',
+        path: '/cep-manager/user_edit',
         meta: {
             title: '用户信息编辑'
         },
