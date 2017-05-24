@@ -100,7 +100,7 @@
         },
         methods: {
             initFormData(){
-                this.$http.get("/src/user.json").then(
+                this.$http.get("/src/data/user.json").then(
                     function (res) {
                         // 处理成功的结果
 //                        alert(JSON.stringify(res));

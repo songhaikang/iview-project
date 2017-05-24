@@ -1,5 +1,8 @@
 <template>
-    <Table border :columns="columns" :data="dataRows"></Table>
+    <div>
+        <Table border :columns="columns" :data="dataRows"></Table>
+        <Button type="primary" @click="initListData()">初始化数据</Button>
+    </div>
 </template>
 
 <script>
@@ -90,6 +93,21 @@
             }
         },
         methods: {
+            initListData(){
+                var self = this;
+                this.$http.get("/src/data/user_list.json").then(
+                    function (res) {
+                        // 处理成功的结果
+//                        alert(JSON.stringify(res.bodyText));
+                        var users = JSON.parse(res.bodyText);
+                        self.dataRows = users;
+                    }, function (res) {
+                        // 处理失败的结果
+                        alert(JSON.stringify(res));
+                    }
+                );
+
+            },
             show (index) {
                 this.$Modal.info({
                     title: '用户信息',
