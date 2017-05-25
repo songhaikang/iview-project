@@ -33,7 +33,6 @@
         </Form-item>
 
         <Form-item>
-            <Button type="primary" @click="initFormData()">初始化数据</Button>
             <Button type="primary" @click="handleSubmit('formValidate')">提交</Button>
             <Button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</Button>
         </Form-item>
@@ -78,10 +77,10 @@
             }
         },
         methods: {
-            initFormData(){
+            initFormData(id){
                 this.$http.post(
                     "/cep-svc/user/queryById.do",
-                    {"id": "1"},
+                    {"id": id},
                     {emulateJSON: true}
                 ).then(
                     function (res) {

@@ -9,13 +9,25 @@
             </Form-item>
         </Form>
         <Table border :columns="columns" :data="dataRows"></Table>
+        <br/>
+        <br/>
+        <Modal
+                v-model="editShow"
+                title="对话框标题">
+            <UserEdit ref="childUser"></UserEdit>
+        </Modal>
+
     </div>
 </template>
 
 <script>
+
+    import UserEdit from './user_edit.vue';
     export default {
+        components: {UserEdit},
         data () {
             return {
+                editShow: false,
                 queryParam: {
                     name: 'sky',
                     desc: ''
@@ -46,10 +58,24 @@
                     {
                         title: '操作',
                         key: 'action',
-                        width: 150,
+                        width: 250,
                         align: 'center',
                         render: (h, params) => {
                             return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                        size: 'small'
+                                    },
+                                    style: {
+                                        marginRight: '5px'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.update(params.index)
+                                        }
+                                    }
+                                }, '修改'),
                                 h('Button', {
                                     props: {
                                         type: 'primary',
@@ -111,7 +137,7 @@
                     "/cep-svc/user/query.do",
                     self.queryParam,
                     {emulateJSON: true}
-                    ).then(
+                ).then(
                     function (res) {
                         // 处理成功的结果
 //                        alert(JSON.stringify(res.bodyText));
@@ -123,6 +149,11 @@
                     }
                 );
 
+            },
+            update (index) {
+                this.editShow = true;
+                this.$refs.childUser.initFormData(this.dataRows[index].id); //通过索引调用子组件的fromParent方法
+//                this.$emit('initFormData', '');//子组件调用父组件
             },
             show (index) {
                 this.$Modal.info({
