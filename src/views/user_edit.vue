@@ -20,7 +20,8 @@
                     <Date-picker type="date" placeholder="选择日期" v-model="formValidate.date"></Date-picker>
                 </Form-item>
                 </Col>
-                <Col span="2" style="text-align: center">-</Col>
+                <Col span="2" style="text-align: center">
+                -</Col>
                 <Col span="11">
                 <Form-item prop="time">
                     <Time-picker type="time" placeholder="选择时间" v-model="formValidate.time"></Time-picker>
@@ -69,43 +70,47 @@
                 },
                 ruleValidate: {
                     name: [
-                        { required: true, message: '姓名不能为空', trigger: 'blur' }
+                        {required: true, message: '姓名不能为空', trigger: 'blur'}
                     ],
                     mail: [
-                        { required: true, message: '邮箱不能为空', trigger: 'blur' },
-                        { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+                        {required: true, message: '邮箱不能为空', trigger: 'blur'},
+                        {type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
                     ],
                     city: [
-                        { required: true, message: '请选择城市', trigger: 'change' }
+                        {required: true, message: '请选择城市', trigger: 'change'}
                     ],
                     gender: [
-                        { required: true, message: '请选择性别', trigger: 'change' }
+                        {required: true, message: '请选择性别', trigger: 'change'}
                     ],
                     interest: [
-                        { required: true, type: 'array', min: 1, message: '至少选择一个爱好', trigger: 'change' },
-                        { type: 'array', max: 2, message: '最多选择两个爱好', trigger: 'change' }
+                        {required: true, type: 'array', min: 1, message: '至少选择一个爱好', trigger: 'change'},
+                        {type: 'array', max: 2, message: '最多选择两个爱好', trigger: 'change'}
                     ],
                     date: [
-                        { required: true, type: 'date', message: '请选择日期', trigger: 'change' }
+                        {required: true, type: 'date', message: '请选择日期', trigger: 'change'}
                     ],
                     time: [
-                        { required: true, type: 'date', message: '请选择时间', trigger: 'change' }
+                        {required: true, type: 'date', message: '请选择时间', trigger: 'change'}
                     ],
                     desc: [
-                        { required: true, message: '请输入个人介绍', trigger: 'blur' },
-                        { type: 'string', min: 20, message: '介绍不能少于20字', trigger: 'blur' }
+                        {required: true, message: '请输入个人介绍', trigger: 'blur'},
+                        {type: 'string', min: 20, message: '介绍不能少于20字', trigger: 'blur'}
                     ]
                 }
             }
         },
         methods: {
             initFormData(){
-                this.$http.get("/src/data/user.json").then(
+                this.$http.post(
+                    "/cep-svc/user/queryById.do",
+                    {"id":"1"},
+                    {emulateJSON: true}
+                ).then(
                     function (res) {
                         // 处理成功的结果
 //                        alert(JSON.stringify(res));
-                        this.formValidate = res.body;
-                    },function (res) {
+                        this.formValidate = res.body.data;
+                    }, function (res) {
                         // 处理失败的结果
                         alert(JSON.stringify(res));
                     }
