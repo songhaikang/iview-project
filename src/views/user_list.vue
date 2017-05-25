@@ -132,7 +132,6 @@
         methods: {
             queryListData(){
                 var self = this;
-//                this.$http.get("/src/data/user_list.json").then(
                 this.$http.post(
                     "/cep-svc/user/query.do",
                     self.queryParam,
