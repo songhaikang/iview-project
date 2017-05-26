@@ -7,7 +7,7 @@
             <Form-item>
                 <Button type="primary" icon="ios-search" @click="loadQueryData()">搜索</Button>
                 <Button type="ghost" icon="refresh" @click="resetQueryForm()" style="margin-left: 8px">重置</Button>
-                <Button type="success" icon="compose" @click="toAdd('queryForm')" style="float:right;margin-right: 30px">新增</Button>
+                <Button type="success" icon="compose" @click="toAdd()" style="float:right;margin-right: 30px">新增</Button>
             </Form-item>
         </Form>
         <Table border :columns="columns" :data="dataRows"></Table>
@@ -28,6 +28,10 @@
 
 <script>
     import EditFormTag from './user_edit.vue';
+
+    import util from '../libs/util.js';
+    import cloudList from '../libs/cloud-list.js';
+
     export default {
         components: {EditFormTag},
         data () {
@@ -71,7 +75,7 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.toUpdate(params.index)
+                                            cloudList.toUpdate("editFormShow", "editForm", this.dataRows[params.index].id, this)
                                         }
                                     }
                                 }, '修改'),
@@ -85,7 +89,7 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.remove(params.index)
+                                            cloudList.remove("/cep-svc/user/delete.do", {"id": this.dataRows[params.index].id}, params.index, "dataRows", this);
                                         }
                                     }
                                 }, '删除'),
@@ -112,29 +116,13 @@
         },
         methods: {
             loadQueryData(){
-                this.$http.post(
-                    "/cep-svc/user/query.do",
-                    this.queryParam,
-                    {emulateJSON: true}
-                ).then(
-                    function (res) {
-                        this.dataRows = JSON.parse(res.bodyText).data.dataRows;
-                    }, function (res) {
-                        this.$Message.success('请求服务器出错!');
-                    }
-                );
+                cloudList.loadQueryData("/cep-svc/user/query.do", this.queryParam, "dataRows", this);
             },
             resetQueryForm () {
-                this.$refs.queryForm.resetFields();
-                this.loadQueryData();
-            },
-            toUpdate (index) {
-                this.editFormShow = true;
-                this.$refs.editForm.initFormData(this.dataRows[index].id);
+                cloudList.resetQueryForm('queryForm', this);
             },
             toAdd () {
-                this.$refs.editForm.resetForm();
-                this.editFormShow = true;
+                cloudList.toAdd("editForm", "editFormShow", this);
             },
             save () {
                 this.$refs.editForm.submitValidate();
@@ -152,24 +140,6 @@
                     title: '用户信息',
                     content: `姓名：${this.dataRows[index].name}<br>邮箱：${this.dataRows[index].email}<br>简介：${this.dataRows[index].description}`
                 })
-            },
-            remove (index) {
-                this.$http.post(
-                    "/cep-svc/user/delete.do",
-                    {"id": this.dataRows[index].id},
-                    {emulateJSON: true}
-                ).then(
-                    function (res) {
-                        var result = JSON.parse(res.bodyText);
-                        if (result.code == "1") {
-                            this.dataRows.splice(index, 1);
-                        } else {
-                            this.$Message.success('删除出错!');
-                        }
-                    }, function (res) {
-                        this.$Message.success('请求服务器出错!');
-                    }
-                );
             }
         }
     }

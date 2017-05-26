@@ -62,6 +62,11 @@
         color: #9ba7b5;
     }
 </style>
+
+<style scoped>
+    @import './styles/common.css';
+</style>
+
 <template>
     <div class="layout" :class="{'layout-hide-text': spanLeft < 5}">
         <div class="layout-ceiling">
