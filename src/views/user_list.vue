@@ -1,70 +1,69 @@
 <template>
     <div>
-        <Form ref="queryParam" :model="queryParam" :label-width="80">
+        <Form ref="queryForm" :model="queryParam" :label-width="80">
             <Form-item label="姓名" prop="name">
                 <Input v-model="queryParam.name" placeholder="请输入姓名" style="width:200px"></Input>
             </Form-item>
             <Form-item>
-                <Button type="primary" @click="queryListData()">查询</Button>
+                <Button type="primary" icon="ios-search" @click="loadQueryData()">搜索</Button>
+                <Button type="ghost" icon="refresh" @click="resetQueryForm()" style="margin-left: 8px">重置</Button>
+                <Button type="success" icon="compose" @click="toAdd('queryForm')" style="float:right;margin-right: 30px">新增</Button>
             </Form-item>
         </Form>
         <Table border :columns="columns" :data="dataRows"></Table>
         <br/>
         <br/>
         <Modal
-                v-model="editShow"
-                title="对话框标题">
-            <UserEdit ref="childUser"></UserEdit>
+                v-model="editFormShow"
+                title="用户信息维护"
+                okText="保存"
+                :mask-closable="false"
+                :loading="loading"
+                @on-ok="save()">
+            <EditFormTag @saveFailed="saveFailed" @saveSuccess="saveSuccess" ref="editForm"></EditFormTag>
         </Modal>
 
     </div>
 </template>
 
 <script>
-
-    import UserEdit from './user_edit.vue';
+    import EditFormTag from './user_edit.vue';
     export default {
-        components: {UserEdit},
+        components: {EditFormTag},
         data () {
             return {
-                editShow: false,
+                editFormShow: false,
+                loading: true,
                 queryParam: {
-                    name: 'sky',
+                    name: '',
                     desc: ''
                 },
                 columns: [
                     {
                         title: '姓名',
                         key: 'name',
-                        render: (h, params) => {
-                            return h('div', [
-                                h('Icon', {
-                                    props: {
-                                        type: 'person'
-                                    }
-                                }),
-                                h('strong', params.row.name)
-                            ]);
-                        }
+                        align: 'center'
                     },
                     {
-                        title: '年龄',
-                        key: 'age'
+                        title: '邮箱',
+                        key: 'email',
+                        align: 'center'
                     },
                     {
-                        title: '地址',
-                        key: 'address'
+                        title: '介绍',
+                        key: 'description',
+                        align: 'center'
                     },
                     {
                         title: '操作',
                         key: 'action',
-                        width: 250,
                         align: 'center',
+                        width: 250,
                         render: (h, params) => {
                             return h('div', [
                                 h('Button', {
                                     props: {
-                                        type: 'error',
+                                        type: 'warning',
                                         size: 'small'
                                     },
                                     style: {
@@ -72,96 +71,105 @@
                                     },
                                     on: {
                                         click: () => {
-                                            this.update(params.index)
+                                            this.toUpdate(params.index)
                                         }
                                     }
                                 }, '修改'),
                                 h('Button', {
                                     props: {
-                                        type: 'primary',
+                                        type: 'error',
                                         size: 'small'
                                     },
                                     style: {
                                         marginRight: '5px'
-                                    },
-                                    on: {
-                                        click: () => {
-                                            this.show(params.index)
-                                        }
-                                    }
-                                }, '查看'),
-                                h('Button', {
-                                    props: {
-                                        type: 'error',
-                                        size: 'small'
                                     },
                                     on: {
                                         click: () => {
                                             this.remove(params.index)
                                         }
                                     }
-                                }, '删除')
+                                }, '删除'),
+                                h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.show(params.index)
+                                        }
+                                    }
+                                }, '查看')
                             ]);
                         }
                     }
                 ],
-                dataRows: [
-                    {
-                        name: '王小明',
-                        age: 18,
-                        address: '北京市朝阳区芍药居'
-                    },
-                    {
-                        name: '张小刚',
-                        age: 25,
-                        address: '北京市海淀区西二旗'
-                    },
-                    {
-                        name: '李小红',
-                        age: 30,
-                        address: '上海市浦东新区世纪大道'
-                    },
-                    {
-                        name: '周小伟',
-                        age: 26,
-                        address: '深圳市南山区深南大道'
-                    }
-                ]
+                dataRows: []
             }
         },
+        created: function () {
+            this.loadQueryData();
+        },
         methods: {
-            queryListData(){
-                var self = this;
+            loadQueryData(){
                 this.$http.post(
                     "/cep-svc/user/query.do",
-                    self.queryParam,
+                    this.queryParam,
                     {emulateJSON: true}
                 ).then(
                     function (res) {
-                        // 处理成功的结果
-//                        alert(JSON.stringify(res.bodyText));
-                        var users = JSON.parse(res.bodyText);
-                        self.dataRows = users.data.dataRows;
+                        this.dataRows = JSON.parse(res.bodyText).data.dataRows;
                     }, function (res) {
-                        // 处理失败的结果
-                        alert(JSON.stringify(res));
+                        this.$Message.success('请求服务器出错!');
                     }
                 );
-
             },
-            update (index) {
-                this.editShow = true;
-                this.$refs.childUser.initFormData(this.dataRows[index].id); //通过索引调用子组件的fromParent方法
-//                this.$emit('initFormData', '');//子组件调用父组件
+            resetQueryForm () {
+                this.$refs.queryForm.resetFields();
+                this.loadQueryData();
+            },
+            toUpdate (index) {
+                this.editFormShow = true;
+                this.$refs.editForm.initFormData(this.dataRows[index].id);
+            },
+            toAdd () {
+                this.$refs.editForm.resetForm();
+                this.editFormShow = true;
+            },
+            save () {
+                this.$refs.editForm.submitValidate();
+            },
+            saveFailed () {
+                this.loading = false;
+            },
+            saveSuccess () {
+                this.editFormShow = false;
+                this.loading = true;
+                this.loadQueryData();
             },
             show (index) {
                 this.$Modal.info({
                     title: '用户信息',
-                    content: `姓名：${this.dataRows[index].name}<br>年龄：${this.dataRows[index].age}<br>地址：${this.dataRows[index].address}`
+                    content: `姓名：${this.dataRows[index].name}<br>邮箱：${this.dataRows[index].email}<br>简介：${this.dataRows[index].description}`
                 })
             },
             remove (index) {
-                this.dataRows.splice(index, 1);
+                this.$http.post(
+                    "/cep-svc/user/delete.do",
+                    {"id": this.dataRows[index].id},
+                    {emulateJSON: true}
+                ).then(
+                    function (res) {
+                        var result = JSON.parse(res.bodyText);
+                        if (result.code == "1") {
+                            this.dataRows.splice(index, 1);
+                        } else {
+                            this.$Message.success('删除出错!');
+                        }
+                    }, function (res) {
+                        this.$Message.success('请求服务器出错!');
+                    }
+                );
             }
         }
     }
